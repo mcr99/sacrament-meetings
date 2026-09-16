@@ -6,10 +6,10 @@ export const dynamic = "force-dynamic";
 
 function getBaseUrl(): string {
   if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
   if (process.env.BASE_URL) {
-    return process.env.BASE_URL;
+    return process.env.BASE_URL.replace(/\/$/, "");
   }
   return "http://localhost:3000";
 }
@@ -27,6 +27,9 @@ async function getMeetingById(id: string): Promise<SacramentMeeting | null> {
 
   const response = await fetch(`${baseUrl}/api/meetings/${id}`, {
     cache: "no-store",
+    headers: {
+      "Accept": "application/json",
+    },
   });
 
   if (response.status === 404) {
