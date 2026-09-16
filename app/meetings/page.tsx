@@ -16,6 +16,8 @@ function getBaseUrl(): string {
 async function getMeetings(): Promise<SacramentMeeting[]> {
   const baseUrl = getBaseUrl();
 
+  console.log("BASE URL:", baseUrl);
+
   if (!baseUrl) {
     throw new Error("BASE_URL is not configured.");
   }
@@ -23,6 +25,8 @@ async function getMeetings(): Promise<SacramentMeeting[]> {
   const response = await fetch(`${baseUrl}/api/meetings`, {
     cache: "no-store",
   });
+
+  console.log("API STATUS:", response.status);
 
   if (!response.ok) {
     throw new Error("Failed to fetch meetings.");
