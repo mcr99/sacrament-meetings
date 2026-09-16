@@ -7,10 +7,10 @@ interface PageProps {
 }
 
 async function getMeetingById(id: string): Promise<SacramentMeeting | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseUrl = process.env.BASE_URL;
 
   if (!baseUrl) {
-    throw new Error("NEXT_PUBLIC_BASE_URL is not configured.");
+    throw new Error("BASE_URL is not configured.");
   }
 
   const response = await fetch(`${baseUrl}/api/meetings/${id}`, {
