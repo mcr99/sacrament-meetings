@@ -1,8 +1,20 @@
 import MeetingCard from "@/components/MeetingCard";
 import type { SacramentMeeting } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
+function getBaseUrl(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  return "http://localhost:3000";
+}
+
 async function getMeetings(): Promise<SacramentMeeting[]> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
 
   if (!baseUrl) {
     throw new Error("BASE_URL is not configured.");

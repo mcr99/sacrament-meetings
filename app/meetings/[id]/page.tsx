@@ -2,12 +2,24 @@ import MeetingDetail from "@/components/MeetingDetail";
 import type { SacramentMeeting } from "@/lib/types";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
+function getBaseUrl(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  return "http://localhost:3000";
+}
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 async function getMeetingById(id: string): Promise<SacramentMeeting | null> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
 
   if (!baseUrl) {
     throw new Error("BASE_URL is not configured.");

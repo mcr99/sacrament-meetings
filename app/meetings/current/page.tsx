@@ -1,8 +1,20 @@
 import type { SacramentMeeting } from "@/lib/types";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
+function getBaseUrl(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  return "http://localhost:3000";
+}
+
 async function getMeetings(): Promise<SacramentMeeting[]> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
 
   if (!baseUrl) {
     throw new Error("BASE_URL is not configured.");
@@ -26,18 +38,14 @@ export default async function CurrentMeetingPage() {
     redirect("/meetings");
   }
 
-  // 1. Calcular la fecha del domingo de la semana actual (YYYY-MM-DD)
   const today = new Date();
   const dayOfWeek = today.getDay();
   const sunday = new Date(today);
   sunday.setDate(today.getDate() - dayOfWeek);
   const sundayDate = sunday.toISOString().split("T")[0];
 
-  // 2. Buscar si hay una reunión agendada exactamente para este domingo
   let currentMeeting = meetings.find((meeting) => meeting.date === sundayDate);
 
-  // 3. Respaldo inteligente: si no existe la reunión de hoy, ordenar por fecha descendente
-  //    (de la más reciente a la más antigua) y tomar la más reciente.
   if (!currentMeeting) {
     const sortedMeetings = [...meetings].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
