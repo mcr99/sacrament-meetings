@@ -10,6 +10,9 @@ import {
 } from "./meetings-db";
 import type { MeetingType } from "./types";
 import type { State } from "./form-state";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
+import { auth } from "@/auth";
 
 
 
@@ -187,6 +190,7 @@ export async function createMeeting(
   prevState: State,
   formData: FormData
 ): Promise<State> {
+  await requireAdmin();
   const validatedFields = MeetingFormSchema.safeParse(
     getFormValues(formData)
   );
@@ -228,6 +232,7 @@ export async function updateMeeting(
   prevState: State,
   formData: FormData
 ): Promise<State> {
+  await requireAdmin();
   const validatedFields = MeetingFormSchema.safeParse(
     getFormValues(formData)
   );
@@ -267,6 +272,7 @@ export async function updateMeeting(
 }
 
 export async function deleteMeeting(id: number): Promise<void> {
+  await requireAdmin();
   try {
     const deleted = await deleteMeetingInDb(id);
 
@@ -286,3 +292,33 @@ export async function deleteMeeting(id: number): Promise<void> {
   redirect("/meetings");
 }
 
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+): Promise<string | undefined> {
+  try {
+    await signIn("credentials", {
+      username: formData.get("username"),
+      password: formData.get("password"),
+      redirectTo: "/meetings/new",
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      if (error.type === "CredentialsSignin") {
+        return "Invalid username or password.";
+      }
+
+      return "Something went wrong. Please try again.";
+    }
+
+    throw error;
+  }
+}
+
+async function requireAdmin() {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Not authenticated");
+  }
+}
