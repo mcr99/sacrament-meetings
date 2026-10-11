@@ -297,9 +297,11 @@ export async function authenticate(
   formData: FormData
 ): Promise<string | undefined> {
   try {
+    const data = Object.fromEntries(formData.entries());
+
     await signIn("credentials", {
-      username: formData.get("username"),
-      password: formData.get("password"),
+      username: data.username as string,
+      password: data.password as string,
       redirectTo: "/meetings/new",
     });
   } catch (error) {
