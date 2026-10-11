@@ -15,8 +15,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sacrament Meeting Planner",
-  description: "Sacrament meeting planning application",
+  title: {
+    default: "Sacrament Meeting Planner",
+    template: "%s | Sacrament Meeting Planner",
+  },
+  description:
+    "Plan and organize sacrament meetings, speakers, hymns, prayers, and announcements for Barcenas 1 Ward.",
+  openGraph: {
+    title: "Sacrament Meeting Planner",
+    description:
+      "Plan and organize sacrament meetings for Barcenas 1 Ward.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
